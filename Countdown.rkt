@@ -8,6 +8,9 @@ perms
       id
       (oper (car l) (f oper id (cdr l)))))
 
-(define (fsum l) (f + 0 l))
-(define (fmult l) (f * 0 l))
-(fmult (car (car perms)))
+(define (sum l) (f + 0 l))
+(define (multiply l) (f * 1 l))
+(define (subtract l) (f - 0 l))
+(define (divide l) (f / 1 l))
+
+(sum (car (car perms)))
