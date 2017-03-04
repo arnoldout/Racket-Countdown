@@ -13,10 +13,6 @@
 (define (divide l) (f / 1 l))
 
 (define (doMath li)
-  (define results (list 1))
-  (append results (sum li))
-  (append results(multiply li))
-  (append results(subtract li))
-  (append results(divide li))
-results)
+  (define results (cons (sum li)(cons (multiply li)(cons(subtract li)(cons (divide li)null)))))
+  results)
 (doMath (car (car perms)))
