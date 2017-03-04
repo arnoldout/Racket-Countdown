@@ -13,4 +13,11 @@ perms
 (define (subtract l) (f - 0 l))
 (define (divide l) (f / 1 l))
 
-(sum (car (car perms)))
+(define (doMath li)
+  (sum(li))
+  (multiply (li))
+  (subtract (li))
+  (divide (li)))
+
+
+(doMath (car (car perms)))
