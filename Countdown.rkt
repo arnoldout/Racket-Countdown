@@ -11,3 +11,6 @@ perms
 (define (fsum l) (f + 0 l))
 (define (fmult l) (f * 0 l))
 (fmult (car (car perms)))
+(define q (make-queue))
+(enqueue q "hi")
+(dequeue q)
