@@ -1,4 +1,5 @@
 #lang racket
+(require data/queue)
 (define l(list 1 2))
 (define perms(list(permutations (list 1 2))))
 perms
@@ -11,6 +12,6 @@ perms
 (define (fsum l) (f + 0 l))
 (define (fmult l) (f * 0 l))
 (fmult (car (car perms)))
-(define q (make-queue))
+(define q (Queue 1 2 3))
 (enqueue q "hi")
 (dequeue q)
