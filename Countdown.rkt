@@ -18,7 +18,8 @@ perms
 
 (define (valid-rpn? expression [stack (make-queue)]) ;[arg 0] optional argument defaults to 0 if not passed
   (cond (null? expression)
-      [(cond (= (car expression) 1)
+      [(if (= stack 0) #t #f)
+       (cond (= (car expression) 1)
           [valid-rpn? (cdr expression) ((enqueue! stack 1))]
           [else (valid-rpn? (cdr expression) ((dequeue! stack -1)))]
            ;decrement s by one
