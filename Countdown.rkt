@@ -1,8 +1,7 @@
 #lang racket
 (require data/queue)
-(define l(list 1 2))
-(define perms(list(permutations (list 1 2))))
-perms
+(define l(list 1 1 1 1 1 -1 -1))
+(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
 
 (define (f oper id l)
   (if (null? l)
@@ -16,13 +15,24 @@ perms
 (enqueue! q "hi")
 (dequeue! q)
 
-(define (valid-rpn? expression [stack (make-queue)]) ;[arg 0] optional argument defaults to 0 if not passed
+
+
+(define (practiseQueue expression [stack (make-queue)])
   (cond (null? expression)
-      [(if (= stack 0) #t #f)
+      [(if (= (car expression) 1) true false)]
+      [else(if (= (dequeue! stack) 1) #t #f)]))
+
+
+(practiseQueue l)
+
+
+
+(define (valid-rpn? expression [stack (make-queue)]) 
+  (cond (null? expression)
+      [(if (= (dequeue! stack) 1) #t #f)
        (cond (= (car expression) 1)
           [valid-rpn? (cdr expression) ((enqueue! stack 1))]
-          [else (valid-rpn? (cdr expression) ((dequeue! stack -1)))]
-           ;decrement s by one
+          [else (valid-rpn? (cdr expression) ((dequeue! stack)))]
           )]))
 
 (valid-rpn? l)
