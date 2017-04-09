@@ -1,6 +1,6 @@
 #lang racket
 (require data/queue)
-(define l(list 1 1 1 1 1 -1 -1))
+(define l(list 4 2 5 * + 1 3 2 * + /))
 (define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
 
 (define (f oper id l)
@@ -21,7 +21,10 @@
   (if (null? expression)
         #f
         (enqueue! stack (car expression)))
-      (if (= (car expression) 1) #t #f))
+  (dequeue! stack)
+  (practiseQueue (cdr expression) stack))
+  
+      ;(if (= (car expression) 1) #t #f))
 
 
 (practiseQueue l)
