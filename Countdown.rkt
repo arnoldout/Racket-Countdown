@@ -18,10 +18,10 @@
 
 
 (define (practiseQueue expression [stack (make-queue)])
-  (cond (null? expression)
-        [(if (empty? stack) #f (enqueue! stack (car expression)))]
-      [(if (= (car expression) 1) true false)]
-      [else(if (= (dequeue! stack) 1) #t #f)]))
+  (if (null? expression)
+        #f
+        (enqueue! stack (car expression)))
+      (if (= (car expression) 1) #t #f))
 
 
 (practiseQueue l)
