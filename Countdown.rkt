@@ -25,7 +25,7 @@
 (define lll(map make-rpn perms))
 
 
-(define (practiseQueue expression [stack 0])
+(define (isValidRPN expression [stack 0])
   (if(< stack 0)
      #f
      (if (null? expression)
@@ -34,24 +34,10 @@
              #t
              #f)
          ;expression still has values, update stack and recursively call self with updated stack and cdr of expression
-         (cond [(equal? (car expression)1)(practiseQueue (cdr expression) (+ stack 1))]
-               [(equal? (car expression)-1)(practiseQueue (cdr expression) (- stack 1))]
-               [else (practiseQueue (cdr expression) (stack))]
+         (cond [(equal? (car expression)1)(isValidRPN (cdr expression) (+ stack 1))]
+               [(equal? (car expression)-1)(isValidRPN (cdr expression) (- stack 1))]
+               [else (isValidRPN (cdr expression) (stack))]
                ))))
   
-      ;(if (= (car expression) 1) #t #f))
-
-;(practiseQueue l)
-
-(define qqq(filter practiseQueue lll))
-
-(define (valid-rpn? expression [stack (make-queue)]) 
-  (cond (null? expression)
-      [(if (= (dequeue! stack) 1) #t #f)
-       (cond (= (car expression) 1)
-          [valid-rpn? (cdr expression) ((enqueue! stack 1))]
-          [else (valid-rpn? (cdr expression) ((dequeue! stack)))]
-          )]))
-
-;(valid-rpn? l)
-
+(define qqq(filter isValidRPN lll))
+qqq
