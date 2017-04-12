@@ -39,6 +39,9 @@
                [else (isValidRPN (cdr expression) (stack))]
                ))))
 
+(define (convertToValues expression values)
+  (cartesian-product expression values))
+
 (define (evaluateRPN expression total [stack (make-queue)])
      (if (null? expression)
          (if (=(queue-length stack) 1)
@@ -60,8 +63,10 @@
    stack)
 (define qqq(filter isValidRPN lll))
 ;qqq
-
+(define ff (list 4 3))
+(define g (list 2 1))
 (define exp(list 3 5 + 7 2 - *))
+(convertToValues ff g)
 (evaluateRPN exp 40)
 
 
