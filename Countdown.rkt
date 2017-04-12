@@ -39,8 +39,13 @@
                [else (isValidRPN (cdr expression) (stack))]
                ))))
 
-(define (convertToValues expression values)
-  (cartesian-product expression values))
+(define (convertToValues operands values expression)
+  (if (null? expression)
+      #f
+      (if (procedure? (car expression))
+          
+  (define vals(convertToValues (cartesian-product expression values) values))
+  (map convertToValues vals values))
 
 (define (evaluateRPN expression total [stack (make-queue)])
      (if (null? expression)
