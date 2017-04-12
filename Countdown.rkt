@@ -44,10 +44,19 @@
      0
      (if (null? expression)
          0
-         ((enqueue! stack (car expression))
-         (evaluateRPN (cdr expression) total rollingTotal (stack)))
-               )))
-  
+         (if (procedure? (car expression))
+         (evaluateRPN (cdr expression) total rollingTotal (doRPN stack (car expression)))    
+         (evaluateRPN (cdr expression) total rollingTotal (enqueueAndReturn stack (car expression)))
+               ))))
+
+(define (enqueueAndReturn stack value)
+  (enqueue! stack value)
+  stack)
+(define (doRPN stack oper)
+  (define a (dequeue! stack))
+  (define b (dequeue! stack))
+  (enqueue! stack (oper(a) (b)))
+   stack)
 (define qqq(filter isValidRPN lll))
 ;qqq
 
