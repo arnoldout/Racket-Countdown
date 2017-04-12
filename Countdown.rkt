@@ -55,7 +55,8 @@
 (define (doRPN stack oper)
   (define a (dequeue! stack))
   (define b (dequeue! stack))
-  (enqueue! stack (oper(a) (b)))
+  (define c (oper a b))
+  (enqueue! stack c)
    stack)
 (define qqq(filter isValidRPN lll))
 ;qqq
