@@ -38,7 +38,20 @@
                [(equal? (car expression)-1)(isValidRPN (cdr expression) (- stack 1))]
                [else (isValidRPN (cdr expression) (stack))]
                ))))
+
+(define (evaluateRPN expression total [rollingTotal 0][stack (make-queue)])
+  (if(< rollingTotal 0)
+     0
+     (if (null? expression)
+         0
+         ((enqueue! stack (car expression))
+         (evaluateRPN (cdr expression) total rollingTotal (stack)))
+               )))
   
 (define qqq(filter isValidRPN lll))
-qqq
+;qqq
+
+(define exp(list 3 5 + 7 2 - *))
+(evaluateRPN exp 40)
+
 
