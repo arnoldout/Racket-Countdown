@@ -29,7 +29,7 @@
   (if(< stack 0)
      #f
      (if (null? expression)
-         ;end of recursion, check state of stack, if 1 then expression is valid RPN
+         ;end of recursion, check state of stack, if 1 then expressin is valid RPN
          (if (= stack 1)
              #t
              #f)
@@ -38,18 +38,17 @@
                [(equal? (car expression)-1)(isValidRPN (cdr expression) (- stack 1))]
                [else (isValidRPN (cdr expression) (stack))]
                ))))
-
-(define (convertToValues [generatedlist (build-list 0 values)]oprnds values expression)
-  (if (null? expression)
-      #f
-      (if (procedure? (car expression))
-          #f
-          (convertToValues(map (cartesians operands values (car expression)))operands values (car expression)))))
-  
-(define (cartesians expression values)
-  (define a(map (cartesian-product expression values)))
+(define (convertToValues binaryList values operands [mappedVals '()] )
+  (if(null? binaryList)
+     mappedVals
+     (if(equal?(car binaryList)1)
+        (convertToValues  (cdr binaryList) values operands (cartesianOnList values mappedVals))
+        (convertToValues  (cdr binaryList) values operands (cartesianOnList operands mappedVals))
+        )
+  ))
+(define  (cartesianOnList list value)
+  (define a (map(cartesian-product list value)))
   a)
-
 (define (evaluateRPN expression total [stack (make-queue)])
      (if (null? expression)
          (if (=(queue-length stack) 1)
@@ -72,9 +71,9 @@
 (define qqq(filter isValidRPN lll))
 ;qqq
 (define ff (list 4 3))
-(define g (list 2 1))
+(define g (list + - / *))
 (define exp(list 3 5 + 7 2 - *))
-(convertToValues ff g)
+(convertToValues l ff g)
 (evaluateRPN exp 40)
 
 
