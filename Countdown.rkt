@@ -23,7 +23,7 @@
 (make-rpn (car  perms))
 
 (define lll(map make-rpn perms))
-
+(define total 40)
 
 (define (isValidRPN expression [stack 0])
   (if(< stack 0)
@@ -50,7 +50,7 @@
   (define a (cartesian-product list value))
   (define b(list 2 3))
   a)
-(define (evaluateRPN expression total [stack (make-queue)])
+(define (evaluateRPN expression [stack (make-queue)])
      (if (null? expression)
          (if (=(queue-length stack) 1)
              (if (equal?(dequeue! stack)total)
@@ -58,8 +58,8 @@
                  #f)
          #f)
          (if (procedure? (car expression))
-         (evaluateRPN (cdr expression) total (doRPN stack (car expression)))    
-         (evaluateRPN (cdr expression) total (enqueueAndReturn stack (car expression)))
+         (evaluateRPN (cdr expression) (doRPN stack (car expression)))    
+         (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
                )))
 
 (define (enqueueAndReturn stack value)
@@ -71,13 +71,17 @@
   (define c (oper b a))
   (enqueue-front! stack c)
    stack)
-(define qqq(filter isValidRPN lll))
-qqq
-(define ff (list 4 3 5 7 8 6))
-(define g (list + - / *))
-(define exp(list '(3 5 + 7 2 - *)(3 5 + 7 9 * *)(3 1 + 7 9 - +)))
+;(define qqq(filter isValidRPN lll));
+;qqq
+(define ff (list 3 5 + 7 2 - *))
+(define fff (cons(list 3 5 + 7 9 * *) ff))
+(define ffff (cons (list 3 1 + 7 9 - +)fff))
+ffff
+;(define g (list + - / *))
+;(define exp (list list(3 5 + 7 2 - *))(list(3 5 + 7 9 * *))(list(3 1 + 7 9 - +)))
 ;(convertToValues l ff g)
-(define qqqq(filter evaluateRPN( exp 40)))
+;(evaluateRPN ff)
+(define qqqq(filter evaluateRPN ffff))
 qqqq
 
 
