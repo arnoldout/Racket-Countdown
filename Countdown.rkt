@@ -47,12 +47,15 @@
         )
   ))
 (define  (cartesianOnList list value)
-  (define a (map(cartesian-product list value)))
+  (define a (cartesian-product list value))
+  (define b(list 2 3))
   a)
 (define (evaluateRPN expression total [stack (make-queue)])
      (if (null? expression)
          (if (=(queue-length stack) 1)
-         (dequeue! stack)
+             (if (equal?(dequeue! stack)total)
+                 #t
+                 #f)
          #f)
          (if (procedure? (car expression))
          (evaluateRPN (cdr expression) total (doRPN stack (car expression)))    
@@ -69,11 +72,12 @@
   (enqueue-front! stack c)
    stack)
 (define qqq(filter isValidRPN lll))
-;qqq
-(define ff (list 4 3))
+qqq
+(define ff (list 4 3 5 7 8 6))
 (define g (list + - / *))
-(define exp(list 3 5 + 7 2 - *))
-(convertToValues l ff g)
-(evaluateRPN exp 40)
+(define exp(list '(3 5 + 7 2 - *)(3 5 + 7 9 * *)(3 1 + 7 9 - +)))
+;(convertToValues l ff g)
+(define qqqq(filter evaluateRPN( exp 40)))
+qqqq
 
 
