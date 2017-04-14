@@ -7,8 +7,8 @@
 (define f (list 7))
 (define g (list 8))
 (define h (list 4 2 3 5 6 7 8))
-(define (cart expressions)
-  (define exp(remove* a expressions))
-  (cartesian-product a exp))
-
-(map cart(map cart (cart h)))
+(define (cart expressions li)
+  (define exp(remove* li expressions))
+  (cartesian-product li exp))
+(cart h a)
+(map (cart h (cart h (curryr (cart h a)))))
