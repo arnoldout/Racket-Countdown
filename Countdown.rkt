@@ -1,7 +1,7 @@
 #lang racket
 (require data/queue)
 
-(define generatedVals(list 3 5 7 2 4 1))
+(define generatedVals(list 3 5 7 ))
 (define operands (list + - * /))
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
@@ -38,6 +38,8 @@
 
 
 (define (evaluateRPN expression [stack (make-queue)])
+  (set! expression (flatten expression))
+  (println expression)
      (if (null? expression)
          (if (=(queue-length stack) 1)
              (if (equal?(dequeue! stack)total)
@@ -92,16 +94,12 @@
       #f))
 
 ;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
-(define start-perm (list -1 -1 -1 -1 1 1 1 1))
+(define start-perm (list -1 -1 -1 1))
 
-(define perms (remove-duplicates (permutations start-perm)))
-
-(make-rpn (car  perms))
-
-(define lll(map make-rpn perms))
-(define llll (map cartManager lll))
-
+(define l(map cartManager (map make-rpn(remove-duplicates (permutations (list -1 -1 -1 1))))))
+(define kkk(filter evaluateRPN l))
+l
 (define total (random 100 1000))
-
+total
 ;(define qqqq(map evaluateRPN llll))
 ;qqqq
