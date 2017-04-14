@@ -11,4 +11,4 @@
   (define exp(remove* a expressions))
   (cartesian-product a exp))
 
-(cart h)
+(map cart(map cart (cart h)))
