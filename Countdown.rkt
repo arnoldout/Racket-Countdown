@@ -1,21 +1,9 @@
 #lang racket
 (require data/queue)
-(define l(list 1 1 -1 1 1 1 1 -1 -1 -1 -1))
-;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
-(define q (make-queue))
-
-(define start-perm (list -1 -1 -1 -1 1 1 1 1))
-
-(define perms (remove-duplicates (permutations start-perm)))
 
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
 
-(make-rpn (car  perms))
-
-(define lll(map make-rpn perms))
-(define total (random 100 1000))
-total
 (define (isValidRPN expression [stack 0])
   (if(< stack 0)
      #f
@@ -60,6 +48,7 @@ total
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
+
 (define (doRPN stack oper)
   (define a (dequeue! stack))
   (define b (dequeue! stack))
@@ -69,16 +58,21 @@ total
   (if (exact-nonnegative-integer? c)
       #t
       #f))
+
+;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
+(define start-perm (list -1 -1 -1 -1 1 1 1 1))
+
+(define perms (remove-duplicates (permutations start-perm)))
+
+(make-rpn (car  perms))
+
+(define lll(map make-rpn perms))
+(define total (random 100 1000))
+total
 ;(define qqq(filter isValidRPN lll));
 ;qqq
 (define ff (list 3 5 + 7 2 - *))
-(define fff (cons(list 3 5 + 7 9 * *) ff))
-(define ffff (cons (list 3 1 + 7 9 - +)fff))
-ffff
-;(define g (list + - / *))
-;(define exp (list list(3 5 + 7 2 - *))(list(3 5 + 7 9 * *))(list(3 1 + 7 9 - +)))
-;(convertToValues l ff g)
-;(evaluateRPN ff)
+
 (define qqqq(evaluateRPN ff))
 qqqq
 
