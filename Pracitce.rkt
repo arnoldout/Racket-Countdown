@@ -8,7 +8,7 @@
 (define g (list 8))
 (define h (list 4 2 3 5 6 7 8))
 (define (cart expressions)
-  (define exp(remove (car a) expressions))
+  (define exp(remove* a expressions))
   (cartesian-product a exp))
 
 (cart h)
