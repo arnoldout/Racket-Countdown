@@ -8,16 +8,25 @@
 (define f (list 7))
 (define g (list 8))
 (define h (list 1 2 3 4 5 6))
-(define j (list 1 1 -1 -1 -1 -1 1 1 1 1 -1))
-(define (cart li [vals '()])
+(define j (list 1 1 1 1 1 1 1 -1 -1 -1 -1 -1))
+(define k (list + - * /))
+(define (cart li evalType [vals '()])
   (if (null? li)
      vals
+     (if(equal? evalType 1)
          (if (pair?(car li))
-             (cart(cdr li)(append (cartesian-product (list(flatten (car li)))(remove* (flatten (car li))h))vals))
-             (cart(cdr li)(append (cartesian-product (list (car li))(remove (car li) h))vals)))
+             (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))(remove* (flatten (car li))h))vals))
+             (cart(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) h))vals)))
+         
+         (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))k)vals))
+         )
          ))
-(define bv(cart h))
-bv
-(cart bv)
-(define cc(cart (cart (cart (cart bv)))))
-cc
+(define (cartManager li evalList [vals '()])
+  (println vals)
+  (if (null? evalList)
+      vals
+      (if (empty? vals)
+      (cartManager li (cdr evalList) (append(cart li (car evalList))vals))    
+      (cartManager li (cdr evalList) (append(cart vals (car evalList))vals)))))
+
+(cartManager h j)
