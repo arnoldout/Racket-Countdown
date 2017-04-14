@@ -57,10 +57,14 @@
                  #t
                  #f)
          #f)
-         (if (procedure? (car expression))
-         (evaluateRPN (cdr expression) (doRPN stack (car expression)))    
+         (if (number? (car expression))
          (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
-               )))
+         ;do rpn calculating, which also returns a boolean
+         ;a true means that the calculation was valid
+         ;a false means the calculation returned either a negative number or fraction, which is invalid
+         (if (doRPN stack (car expression))
+             (evaluateRPN (cdr expression) stack)
+             #f))))
 
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
@@ -70,7 +74,10 @@
   (define b (dequeue! stack))
   (define c (oper b a))
   (enqueue-front! stack c)
-   stack)
+  ;checking if the calculated value is negative or a fraction
+  (if (exact-nonnegative-integer? c)
+      #t
+      #f))
 ;(define qqq(filter isValidRPN lll));
 ;qqq
 (define ff (list 3 5 + 7 2 - *))
@@ -81,7 +88,7 @@ ffff
 ;(define exp (list list(3 5 + 7 2 - *))(list(3 5 + 7 9 * *))(list(3 1 + 7 9 - +)))
 ;(convertToValues l ff g)
 ;(evaluateRPN ff)
-(define qqqq(filter evaluateRPN ffff))
+(define qqqq(evaluateRPN ff))
 qqqq
 
 
