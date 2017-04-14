@@ -1,35 +1,16 @@
 #lang racket
 (require data/queue)
-(define l(list 1 1 -1 1 1 1 1 -1 -1 -1 -1))
-;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
 
-(define (f oper id l)
-  (if (null? l)
-      id
-      (oper (car l) (f oper id (cdr l)))))
-
-(define (fsum l) (f + 0 l))
-(define (fmult l) (f * 0 l))
-;(fmult (car (car perms)))
-(define q (make-queue))
-
-(define start-perm (list -1 -1 -1 -1 1 1 1 1))
-
-(define perms (remove-duplicates (permutations start-perm)))
-
+(define generatedVals(list 3 5 7 ))
+(define operands (list + - * /))
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
-
-(make-rpn (car  perms))
-
-(define lll(map make-rpn perms))
-
 
 (define (isValidRPN expression [stack 0])
   (if(< stack 0)
      #f
      (if (null? expression)
-         ;end of recursion, check state of stack, if 1 then expression is valid RPN
+         ;end of recursion, check state of stack, if 1 then expressin is valid RPN
          (if (= stack 1)
              #t
              #f)
@@ -39,29 +20,86 @@
                [else (isValidRPN (cdr expression) (stack))]
                ))))
 
-(define (evaluateRPN expression total [stack (make-queue)])
+
+(define (convertToValues binaryList values operands [mappedVals '()] )
+  (if(null? binaryList)
+     mappedVals
+     (if(equal?(car binaryList)1)
+        (convertToValues  (cdr binaryList) values operands (cartesianOnList values mappedVals))
+        (convertToValues  (cdr binaryList) values operands (cartesianOnList operands mappedVals))
+        )
+  ))
+
+
+(define  (cartesianOnList list value)
+  (define a (cartesian-product list value))
+  (define b(list 2 3))
+  a)
+
+
+(define (evaluateRPN expression [stack (make-queue)])
+  (set! expression (flatten expression))
+  (println expression)
      (if (null? expression)
          (if (=(queue-length stack) 1)
-         (dequeue! stack)
+             (if (equal?(dequeue! stack)total)
+                 #t
+                 #f)
          #f)
-         (if (procedure? (car expression))
-         (evaluateRPN (cdr expression) total (doRPN stack (car expression)))    
-         (evaluateRPN (cdr expression) total (enqueueAndReturn stack (car expression)))
-               )))
+         (if (number? (car expression))
+         (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
+         ;do rpn calculating, which also returns a boolean 
+         ;a true means that the calculation was valid
+         ;a false means the calculation returned either a negative number or fraction, which is invalid
+         (if (doRPN stack (car expression))
+             (evaluateRPN (cdr expression) stack)
+             #f))))
+
+
+(define (cart li evalType [vals '()])
+  (if (null? li)
+     vals
+     (if(equal? evalType 1)
+         (if (pair?(car li))
+             (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))(remove* (flatten (car li))generatedVals))vals))
+             (cart(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
+         
+         (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
+         )
+         ))
+
+
+
+(define (cartManager evalList [vals '()])
+  (define li generatedVals)
+  (if (null? evalList)
+      vals
+      (if (empty? vals)
+      (cartManager (cdr evalList) (append(cart li (car evalList))vals))    
+      (cartManager (cdr evalList) (append(cart vals (car evalList))vals)))))
+
 
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
+
 (define (doRPN stack oper)
   (define a (dequeue! stack))
   (define b (dequeue! stack))
   (define c (oper b a))
   (enqueue-front! stack c)
-   stack)
-(define qqq(filter isValidRPN lll))
-;qqq
+  ;checking if the calculated value is negative or a fraction
+  (if (exact-nonnegative-integer? c)
+      #t
+      #f))
 
-(define exp(list 3 5 + 7 2 - *))
-(evaluateRPN exp 40)
+;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
+(define start-perm (list -1 -1 -1 1))
 
-
+(define l(map cartManager (map make-rpn(remove-duplicates (permutations (list -1 -1 -1 1))))))
+(define kkk(filter evaluateRPN l))
+l
+(define total (random 100 1000))
+total
+;(define qqqq(map evaluateRPN llll))
+;qqqq
