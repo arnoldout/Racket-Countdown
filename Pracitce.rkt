@@ -9,28 +9,14 @@
 (define g (list 8))
 (define h (list 1 2 3 4 5 6))
 (define j (list 1 1 -1 -1 -1 -1 1 1 1 1 -1))
-(define (cart li evalOnes[vals '()])
+(define (cart li [vals '()])
   (if (null? li)
      vals
-     (if (equal?(car evalOnes)1)
          (if (pair?(car li))
-             (cart(cdr li)(cdr evalOnes)(append (func (car li))vals))
-             (cart(cdr li)(cdr evalOnes)(append (func2 (car li))vals)))
-         #f)
-
+             (cart(cdr li)(append (cartesian-product (list(flatten (car li)))(remove* (flatten (car li))h))vals))
+             (cart(cdr li)(append (cartesian-product (list (car li))(remove (car li) h))vals)))
          ))
-
-
-(define (func li)
-  (define nn(list (flatten li)))
-  (define nnm(remove* (flatten li)h))
-  (define nnmn(cartesian-product nn nnm))
-  (println nnmn)
-  nnmn)
-(define (func2 li)
-  (define dd(remove li h))
-  (cartesian-product (list li)dd))
-(define bv(cart h j))
+(define bv(cart h))
 bv
 (cart bv)
 (define cc(cart (cart (cart (cart bv)))))
