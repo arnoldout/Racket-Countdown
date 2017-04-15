@@ -30,20 +30,21 @@ total
 
 (define (evaluateRPN expression [stack (make-queue)])
   (set! expression (flatten expression))
-     (if (null? expression)
-         (if (=(queue-length stack) 1)
-             (if (equal?(dequeue! stack)total)
-                 #t
-                 #f)
-         #f)
-         (if (number? (car expression))
-         (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
-         ;do rpn calculating, which also returns a boolean 
-         ;a true means that the calculation was valid
-         ;a false means the calculation returned either a negative number or fraction, which is invalid
-         (if (doRPN stack (car expression))
-             (evaluateRPN (cdr expression) stack)
-             #f))))
+  (if (null? expression)
+      (if (=(queue-length stack) 1)
+          (if (equal?(dequeue! stack)total)
+              #t
+              #f)
+          #f)
+      (if (number? (car expression))
+          (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
+          ;do rpn calculating, which also returns a boolean 
+          ;a true means that the calculation was valid
+          ;a false means the calculation returned either a negative number or fraction, which is invalid
+          (if
+           (doRPN stack (car expression))
+              (evaluateRPN (cdr expression) stack)
+              #f))))
 
 
 (define (cart li evalType [vals '()])
@@ -69,15 +70,13 @@ total
 (define (cartManager evalList [vals '()])
   (define li generatedVals)
   (if (null? evalList)
-      (println(filter evaluateRPN vals))
+      (map kdot(filter evaluateRPN vals))
       (if (empty? vals)
       (cartManager (cdr (cdr evalList)) (cart li (car evalList))) 
       (cartManager (cdr evalList) (cart vals (car evalList))))))
 
 (define (kdot li)
-  (println li)
-  (define g li)
-  (println g))
+  (println li))
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
@@ -85,10 +84,10 @@ total
 (define (doRPN stack oper)
   (define a (dequeue! stack))
   (define b (dequeue! stack))
-  (define c (oper b a))
+  (define c (oper b a)) 
   (enqueue-front! stack c)
   ;checking if the calculated value is negative or a fraction
-  (if (and (exact-nonnegative-integer? c) (not(equal? c 0)))
+  (if (and (exact-nonnegative-integer? c) (not(zero? c)))
       #t
       #f))
 
