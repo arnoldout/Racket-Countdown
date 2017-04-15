@@ -1,8 +1,13 @@
 #lang racket
 (require data/queue)
 
-(define generatedVals(list 3 5 7 ))
+
+;(define total (random 100 1000))
+(define total 22)
+(define generatedVals(list 3 5 7 4 2 1))
 (define operands (list + - * /))
+total
+
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
 
@@ -21,25 +26,10 @@
                ))))
 
 
-(define (convertToValues binaryList values operands [mappedVals '()] )
-  (if(null? binaryList)
-     mappedVals
-     (if(equal?(car binaryList)1)
-        (convertToValues  (cdr binaryList) values operands (cartesianOnList values mappedVals))
-        (convertToValues  (cdr binaryList) values operands (cartesianOnList operands mappedVals))
-        )
-  ))
-
-
-(define  (cartesianOnList list value)
-  (define a (cartesian-product list value))
-  (define b(list 2 3))
-  a)
 
 
 (define (evaluateRPN expression [stack (make-queue)])
   (set! expression (flatten expression))
-  (println expression)
      (if (null? expression)
          (if (=(queue-length stack) 1)
              (if (equal?(dequeue! stack)total)
@@ -60,25 +50,34 @@
   (if (null? li)
      vals
      (if(equal? evalType 1)
-         (if (pair?(car li))
-             (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))(remove* (flatten (car li))generatedVals))vals))
+         (if (pair?(flatten (car li)))
+             (cart(cdr li) evalType (append (navoo li vals) vals))
              (cart(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
          
          (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
          )
          ))
-
-
+;might be adding vals too early
+(define (navoo li vals)
+  (define u(flatten (car li)))
+  (define v generatedVals)
+  (define g(remove* u generatedVals))
+  (define n (cartesian-product (list(car li))g))
+  n
+  )
 
 (define (cartManager evalList [vals '()])
   (define li generatedVals)
   (if (null? evalList)
-      vals
+      (println(filter evaluateRPN vals))
       (if (empty? vals)
-      (cartManager (cdr evalList) (append(cart li (car evalList))vals))    
-      (cartManager (cdr evalList) (append(cart vals (car evalList))vals)))))
+      (cartManager (cdr (cdr evalList)) (cart li (car evalList))) 
+      (cartManager (cdr evalList) (cart vals (car evalList))))))
 
-
+(define (kdot li)
+  (println li)
+  (define g li)
+  (println g))
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
@@ -89,17 +88,16 @@
   (define c (oper b a))
   (enqueue-front! stack c)
   ;checking if the calculated value is negative or a fraction
-  (if (exact-nonnegative-integer? c)
+  (if (and (exact-nonnegative-integer? c) (not(equal? c 0)))
       #t
       #f))
 
 ;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
 (define start-perm (list -1 -1 -1 1))
 
-(define l(map cartManager (map make-rpn(remove-duplicates (permutations (list -1 -1 -1 1))))))
-(define kkk(filter evaluateRPN l))
-l
-(define total (random 100 1000))
+(define l(map cartManager (map make-rpn(remove-duplicates (permutations (list 1 1 1 1 -1 -1 -1 -1))))))
+;(define kkk(filter evaluateRPN l))
+;l
 total
 ;(define qqqq(map evaluateRPN llll))
 ;qqqq
