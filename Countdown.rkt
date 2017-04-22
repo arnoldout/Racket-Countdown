@@ -54,10 +54,18 @@ generatedVals
       listB
       (removeListItems(cdr listA)(remove (car listA) listB))))
 
-      
+;function that takes a list of numbers and operands, and attempts to use Reverse Polish Notation to evaluate the expression
+;when hitting this function, the RPN expression should be in the correct format, but may still evaluate to an invalid value
+
+;Parameters - expression: The list of numbers and operands
+;           - stack: A queue that stores the numbers during operations, and is popped twice when an operand is found 
 (define (evaluateRPN expression [stack (make-queue)])
+  ;remove unnecessary brackets from expression
   (set! expression (flatten expression))
+  ;if expression is empty
   (if (null? expression)
+      ;if queue has 1 value left and it is equal to the total, then return true
+      ;any other outcome will return false
       (if (=(queue-length stack) 1)
           (if (equal?(dequeue! stack)total)
               #t
