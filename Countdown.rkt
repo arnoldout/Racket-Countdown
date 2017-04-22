@@ -11,37 +11,48 @@ total
 (define possibleVals(list 1  1  2  2  3  3  4  4  5  5  6  6  7  7  8  8  9  9  10  10  25  50 75 100))
 ;list of the available operands
 (define operands (list + - * /))
-(define (take-n-random lst)
-  (take (shuffle lst) 6))
-(define generatedVals (take-n-random possibleVals))
+
+;shuffle the possible list values, and return a list of 6 possible elements
+(define (randomList expression)
+  (take (shuffle expression) 6))
+
+;create call randomList on the possible Values list, and store the returned list as generatedVals 
+(define generatedVals (randomList possibleVals))
 generatedVals
 
+;function that takes an incomplete list of 1s and -1s, indicative of numbers or operators respectively,
+;and append two 1s to the front, and a -1 to the back of l
+;this will create a possibly valid RPN value structure
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
 
+;function that checks a list of 1s and -1s, to see if the function can possibly return a single number
 (define (isValidRPN expression [stack 0])
+  ;if the value in the stack is ever below 0, exit the function
+  ;the stack is subtracted on every -1, and so if too many -1s are in order, can make the stack negative
+  ;i.e. an invalid RPN structure
   (if(< stack 0)
      #f
      (if (null? expression)
-         ;end of recursion, check state of stack, if 1 then expressin is valid RPN
+         ;end of recursion, check state of stack, if stack value is 1 then expressin is valid RPN
+         ;other wise there will be too many items in the stack when evaluating with real values
          (if (= stack 1)
              #t
              #f)
          ;expression still has values, update stack and recursively call self with updated stack and cdr of expression
+         ;if value is 1, icrement stack, if value is -1, decrement stack 
          (cond [(equal? (car expression)1)(isValidRPN (cdr expression) (+ stack 1))]
                [(equal? (car expression)-1)(isValidRPN (cdr expression) (- stack 1))]
                [else (isValidRPN (cdr expression) (stack))]
                ))))
 
 
-;
-;Write own function to do remove on a list
-;
+;function to remove first instance of value from list
+;works similar to remove*, except that it only removes 1 instance of that value from the list
 (define (removeListItems listA listB)
   (if (null? listA)
       listB
       (removeListItems(cdr listA)(remove (car listA) listB))))
-
 
       
 (define (evaluateRPN expression [stack (make-queue)])
