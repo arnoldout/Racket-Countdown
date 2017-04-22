@@ -2,11 +2,11 @@
 (require data/queue)
 
 
-;(define total (random 100 1000))
-(define total 22)
+(define total (random 100 1000))
+;(define total 22)
 (define generatedVals(list 3 5 7 4 2 1))
 (define operands (list + - * /))
-total
+(displayln ("Total :",total))
 
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
@@ -30,7 +30,7 @@ total
 ;Write own function to do remove on a list
 ;
 (define (removeListItems listA listB)
-  (if (?null listA)
+  (if (null? listA)
       listB
       (removeListItems(cdr listA)(remove (car listA) listB))))
 
