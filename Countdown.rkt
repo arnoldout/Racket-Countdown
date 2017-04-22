@@ -26,8 +26,16 @@ total
                ))))
 
 
+;
+;Write own function to do remove on a list
+;
+(define (removeListItems listA listB)
+  (if (?null listA)
+      listB
+      (removeListItems(cdr listA)(remove (car listA) listB))))
 
 
+      
 (define (evaluateRPN expression [stack (make-queue)])
   (set! expression (flatten expression))
   (if (null? expression)
@@ -62,7 +70,7 @@ total
 (define (navoo li vals)
   (define u(flatten (car li)))
   (define v generatedVals)
-  (define g(remove* u generatedVals))
+  (define g(removeListItems u generatedVals))
   (define n (cartesian-product (list(car li))g))
   n
   )
@@ -77,6 +85,7 @@ total
 
 (define (kdot li)
   (println li))
+
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
