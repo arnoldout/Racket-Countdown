@@ -2,11 +2,19 @@
 (require data/queue)
 
 
-(define total (random 100 1000))
-;(define total 22)
-(define generatedVals(list 3 5 7 4 2 1))
+;Generate a random number between 101 and 999
+;stored as total, the target number the algorithm needs to hit
+(define total (random 101 1000))
+;print out the generated total
+total
+;list of possible numbers, 6 numbers will be selected at random from this list
+(define possibleVals(list 1  1  2  2  3  3  4  4  5  5  6  6  7  7  8  8  9  9  10  10  25  50 75 100))
+;list of the available operands
 (define operands (list + - * /))
-(displayln ("Total :",total))
+(define (take-n-random lst)
+  (take (shuffle lst) 6))
+(define generatedVals (take-n-random possibleVals))
+generatedVals
 
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
