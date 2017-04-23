@@ -84,32 +84,44 @@ generatedVals
                   (evaluateRPN (cdr expression) stack)
                   #f)))))
 
-
+;looping through the list of values, and creating the cartesian product
+;value by value from the list generatedVals, this function appends 1 value to each cartesian list
 (define (singleOneCartesian li evalType [vals '()])
   (if (null? li)
      vals
+     ;if type is 1 append a number, otherwise append an operand
      (if(equal? evalType 1)
+        ;if li is a list, the already used values need to be treated differently
+        ;when its a singleValue, we can just use the remove function to remove all of the already used values
+        ;I use the getCartesianValue function to remove all of the values already used, this function also generates the cartesian products
+        ;while on single values, the cartesian products are generated in line
          (if (pair?(flatten (car li)))
-             (singleOneCartesian(cdr li) evalType (append (navoo li vals) vals))
+             (singleOneCartesian(cdr li) evalType (append (getCartesianValue li vals) vals))
              (singleOneCartesian(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
-         
+         ;value is a procedure, this means we need to generate the cartesian products with every possible operand
          (singleOneCartesian(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
          )
          ))
-;might be adding vals too early
-(define (navoo li vals)
+
+;function that flatten removes any double values and returns the cartesian product
+;of the top of the list and all of the values not yet used 
+(define (getCartesianValue li vals)
   (define u(flatten (car li)))
-  (define v generatedVals)
   (define g(removeListItems u generatedVals))
   (define n (cartesian-product (list(car li))g))
   n
   )
-
+;function that loops through a single list of 1s and -1s, and slowly generates all of the cartesian
+;product values using the singleOneCartesian function which will generate all of the 
 (define (cartesianValues evalList [vals '()])
   (define li generatedVals)
   (if (null? evalList)
+      ;all expressions have been generated at this point
+      ;filter all expressions that dont equal the randomized total
+      ;print out the remaining values
       (map outputExpression(filter evaluateRPN vals))
       (if (empty? vals)
+          ;generate the cartesians of the next 1 or -1
       (cartesianValues (cdr (cdr evalList)) (singleOneCartesian li (car evalList))) 
       (cartesianValues (cdr evalList) (singleOneCartesian vals (car evalList))))))
 
