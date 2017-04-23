@@ -4,7 +4,7 @@
 
 ;Generate a random number between 101 and 999
 ;stored as total, the target number the algorithm needs to hit
-(define total (random 101 1000))
+(define total 10)
 ;print out the generated total
 total
 ;list of possible numbers, 6 numbers will be selected at random from this list
@@ -17,7 +17,7 @@ total
   (take (shuffle expression) 6))
 
 ;create call randomList on the possible Values list, and store the returned list as generatedVals 
-(define generatedVals (randomList possibleVals))
+(define generatedVals (list 4 1 2 1 1 1))
 generatedVals
 
 ;function that takes an incomplete list of 1s and -1s, indicative of numbers or operators respectively,
@@ -82,15 +82,15 @@ generatedVals
               #f))))
 
 
-(define (cart li evalType [vals '()])
+(define (singleOneCartesian li evalType [vals '()])
   (if (null? li)
      vals
      (if(equal? evalType 1)
          (if (pair?(flatten (car li)))
-             (cart(cdr li) evalType (append (navoo li vals) vals))
-             (cart(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
+             (singleOneCartesian(cdr li) evalType (append (navoo li vals) vals))
+             (singleOneCartesian(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
          
-         (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
+         (singleOneCartesian(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
          )
          ))
 ;might be adding vals too early
@@ -102,17 +102,26 @@ generatedVals
   n
   )
 
-(define (cartManager evalList [vals '()])
+(define (cartesianValues evalList [vals '()])
   (define li generatedVals)
   (if (null? evalList)
-      (map kdot(filter evaluateRPN vals))
+      (map outputValidExpression(filter evaluateRPN vals))
       (if (empty? vals)
-      (cartManager (cdr (cdr evalList)) (cart li (car evalList))) 
-      (cartManager (cdr evalList) (cart vals (car evalList))))))
+      (cartesianValues (cdr (cdr evalList)) (singleOneCartesian li (car evalList))) 
+      (cartesianValues (cdr evalList) (singleOneCartesian vals (car evalList))))))
 
-(define (kdot li)
-  (println li))
+(define (outputValidExpression li [stack '()])
+  (set! li (flatten li))
+  (if (null? li)
+      (displayln stack)
+      (if (procedure? (car li))
+          (outputValidExpression (cdr li)(append stack (list '+)))
+          (outputValidExpression (cdr li)(append stack (list (car li)))))))
 
+(define (operandSwitch operand)
+
+
+  
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
@@ -127,12 +136,12 @@ generatedVals
       #t
       #f))
 
-;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
-(define start-perm (list -1 -1 -1 1))
+;calling the permutations function on a list of 1s and -1s
+;it then calls the remove-Duplicates function which takes out any identical lists
+;make-rpn is then called, and a -1 is added to the end, and two 1s are added to the front of evert permutation
+;every permutation
 
-(define l(map cartManager (map make-rpn(remove-duplicates (permutations (list 1 1 1 1 -1 -1 -1 -1))))))
-;(define kkk(filter evaluateRPN l))
-;l
-total
-;(define qqqq(map evaluateRPN llll))
-;qqqq
+;;;;you missed a step somewhere, the lists are checked for valid rpns, could speed up a bit
+(map cartesianValues (filter isValidRPN(map make-rpn(remove-duplicates (permutations (list 1 1 1 1 -1 -1 -1 -1))))))
+
+(quote 2)
