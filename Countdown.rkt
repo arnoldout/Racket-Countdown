@@ -71,17 +71,19 @@ generatedVals
               #t
               #f)
           #f)
+      ;add number to stack if value is a number, process RPN if value is a procedure
       (if (number? (car expression))
           (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
-          ;do rpn calculating, which also returns a boolean 
-          ;a true means that the calculation was valid
-          ;a false means the calculation returned either a negative number or fraction, which is invalid
+          ;failsafe to ensure RPN procedure has 2 elements to dequeue
           (if (<(queue-length stack) 2)
               #f
-          (if
-           (doRPN stack (car expression))
-              (evaluateRPN (cdr expression) stack)
-              #f)))))
+              ;do rpn calculating, which also returns a boolean 
+              ;a true means that the calculation was valid
+              ;a false means the calculation returned either a negative number or fraction, which is invalid
+              (if
+               (doRPN stack (car expression))
+               (evaluateRPN (cdr expression) stack)
+               #f)))))
 
 
 (define (singleOneCartesian li evalType [vals '()])
