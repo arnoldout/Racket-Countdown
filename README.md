@@ -33,5 +33,5 @@ My evaluation function implements a queue named stack, it self recurses through 
 The filter method used to wittle down all the expressions to only those that equate the total, returns a large list of expressions. I use the map function on that list, and output all of the remaining expressions to the user. I found it was best to do the printing here, as at this point, the heap space is considerably large but if I were to wait until all of the possibilities were generated, the computer would likely crash. By doing this it allows Racket to forget about the all of the values it has just generated once they've been output.
 At this point, the operands are in a non human readible syntax such as #<procedure:+>. To make it more readible, I self recurse over the ouput list, and if the value is a procedure, I use it in a quick expression. By using it as a function, with 8 and 4, I can determine what type of procedure it is. For example a 8-4 equals 4, or 8*4 equals 32. Depending on the outcome of the equation, I return a more human readible *, +,- or /.
 
-Each valid expression is then printed on a new line and looks like the following :(4 8 100 75 10 7 * - + + *)
+Each valid expression is then printed on a new line and looks like the following: (4 8 100 75 10 7 * - + + *)
 
