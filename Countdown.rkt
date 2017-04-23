@@ -80,10 +80,9 @@ generatedVals
               ;do rpn calculating, which also returns a boolean 
               ;a true means that the calculation was valid
               ;a false means the calculation returned either a negative number or fraction, which is invalid
-              (if
-               (doRPN stack (car expression))
-               (evaluateRPN (cdr expression) stack)
-               #f)))))
+              (if (doRPN stack (car expression))
+                  (evaluateRPN (cdr expression) stack)
+                  #f)))))
 
 
 (define (singleOneCartesian li evalType [vals '()])
