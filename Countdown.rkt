@@ -4,7 +4,7 @@
 
 ;Generate a random number between 101 and 999
 ;stored as total, the target number the algorithm needs to hit
-(define total 10)
+(define total (random 101 1000))
 ;print out the generated total
 total
 ;list of possible numbers, 6 numbers will be selected at random from this list
@@ -17,7 +17,7 @@ total
   (take (shuffle expression) 6))
 
 ;create call randomList on the possible Values list, and store the returned list as generatedVals 
-(define generatedVals (list 4 1 2 1 1 1))
+(define generatedVals (randomList possibleVals))
 generatedVals
 
 ;function that takes an incomplete list of 1s and -1s, indicative of numbers or operators respectively,
