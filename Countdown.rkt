@@ -115,10 +115,16 @@ generatedVals
   (if (null? li)
       (displayln stack)
       (if (procedure? (car li))
-          (outputValidExpression (cdr li)(append stack (list '+)))
+          (outputValidExpression (cdr li)(append stack (list (operandSwitch (car li)))))
           (outputValidExpression (cdr li)(append stack (list (car li)))))))
 
 (define (operandSwitch operand)
+  (define val(operand 8 4))
+  (cond
+    [(equal? val 12)'+]
+    [(equal? val 4)'-]
+    [(equal? val 32)'*]
+    [(equal? val 2)'/]))
 
 
   
