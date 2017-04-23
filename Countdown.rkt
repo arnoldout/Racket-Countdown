@@ -125,12 +125,20 @@ generatedVals
       (cartesianValues (cdr (cdr evalList)) (singleOneCartesian li (car evalList))) 
       (cartesianValues (cdr evalList) (singleOneCartesian vals (car evalList))))))
 
+;take a valid expression, and replace all of
+;the values that are procedures, with simple expression strings
+;then print out the list to the user
 (define (outputValidExpression li [stack '()])
   (if (null? li)
+      ;output stack
       (displayln stack)
       (if (procedure? (car li))
           (outputValidExpression (cdr li)(append stack (list (operandSwitch (car li)))))
           (outputValidExpression (cdr li)(append stack (list (car li)))))))
+
+;take an expression, check if the expression is an actual expression
+;small chance that values coming in could be empty expression
+;so only output values that are actual expressions
 (define (outputExpression expression)
    (set! expression (flatten expression))
   (if (number? (car expression))
