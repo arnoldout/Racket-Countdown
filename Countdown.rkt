@@ -145,7 +145,8 @@ generatedVals
       (outputValidExpression expression)
        #f))
       
-
+;take a procedure operand such as <#procedure#+> use it as an operand with 8 and 4 as parameters
+;depending on the answer, the operand type will be revealed and a string version returnd
 (define (operandSwitch operand)
   (define val(operand 8 4))
   (cond
