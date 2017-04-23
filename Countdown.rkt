@@ -1,105 +1,179 @@
 #lang racket
 (require data/queue)
 
-(define generatedVals(list 3 5 7 ))
+
+;Generate a random number between 101 and 999
+;stored as total, the target number the algorithm needs to hit
+(define total (random 101 1000))
+;print out the generated total
+total
+;list of possible numbers, 6 numbers will be selected at random from this list
+(define possibleVals(list 1  1  2  2  3  3  4  4  5  5  6  6  7  7  8  8  9  9  10  10  25  50 75 100))
+;list of the available operands
 (define operands (list + - * /))
+
+;shuffle the possible list values, and return a list of 6 possible elements
+(define (randomList expression)
+  (take (shuffle expression) 6))
+
+;create call randomList on the possible Values list, and store the returned list as generatedVals 
+(define generatedVals (randomList possibleVals))
+generatedVals
+
+;function that takes an incomplete list of 1s and -1s, indicative of numbers or operators respectively,
+;and append two 1s to the front, and a -1 to the back of l
+;this will create a possibly valid RPN value structure
 (define (make-rpn l)
   (append (list 1 1) l (list -1)))
 
+;function that checks a list of 1s and -1s, to see if the function can possibly return a single number
 (define (isValidRPN expression [stack 0])
+  ;if the value in the stack is ever below 0, exit the function
+  ;the stack is subtracted on every -1, and so if too many -1s are in order, can make the stack negative
+  ;i.e. an invalid RPN structure
   (if(< stack 0)
      #f
      (if (null? expression)
-         ;end of recursion, check state of stack, if 1 then expressin is valid RPN
+         ;end of recursion, check state of stack, if stack value is 1 then expressin is valid RPN
+         ;other wise there will be too many items in the stack when evaluating with real values
          (if (= stack 1)
              #t
              #f)
          ;expression still has values, update stack and recursively call self with updated stack and cdr of expression
+         ;if value is 1, icrement stack, if value is -1, decrement stack 
          (cond [(equal? (car expression)1)(isValidRPN (cdr expression) (+ stack 1))]
                [(equal? (car expression)-1)(isValidRPN (cdr expression) (- stack 1))]
                [else (isValidRPN (cdr expression) (stack))]
                ))))
 
 
-(define (convertToValues binaryList values operands [mappedVals '()] )
-  (if(null? binaryList)
-     mappedVals
-     (if(equal?(car binaryList)1)
-        (convertToValues  (cdr binaryList) values operands (cartesianOnList values mappedVals))
-        (convertToValues  (cdr binaryList) values operands (cartesianOnList operands mappedVals))
-        )
-  ))
+;function to remove first instance of value from list
+;works similar to remove*, except that it only removes 1 instance of that value from the list
+(define (removeListItems listA listB)
+  (if (null? listA)
+      listB
+      (removeListItems(cdr listA)(remove (car listA) listB))))
 
+;function that takes a list of numbers and operands, and attempts to use Reverse Polish Notation to evaluate the expression
+;when hitting this function, the RPN expression should be in the correct format, but may still evaluate to an invalid value
 
-(define  (cartesianOnList list value)
-  (define a (cartesian-product list value))
-  (define b(list 2 3))
-  a)
-
-
+;Parameters - expression: The list of numbers and operands
+;           - stack: A queue that stores the numbers during operations, and is popped twice when an operand is found 
 (define (evaluateRPN expression [stack (make-queue)])
+  ;remove unnecessary brackets from expression
   (set! expression (flatten expression))
-  (println expression)
-     (if (null? expression)
-         (if (=(queue-length stack) 1)
-             (if (equal?(dequeue! stack)total)
-                 #t
-                 #f)
-         #f)
-         (if (number? (car expression))
-         (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
-         ;do rpn calculating, which also returns a boolean 
-         ;a true means that the calculation was valid
-         ;a false means the calculation returned either a negative number or fraction, which is invalid
-         (if (doRPN stack (car expression))
-             (evaluateRPN (cdr expression) stack)
-             #f))))
+  ;if expression is empty
+  (if (null? expression)
+      ;if queue has 1 value left and it is equal to the total, then return true
+      ;any other outcome will return false
+      (if (=(queue-length stack) 1)
+          (if (equal?(dequeue! stack)total)
+              #t
+              #f)
+          #f)
+      ;add number to stack if value is a number, process RPN if value is a procedure
+      (if (number? (car expression))
+          (evaluateRPN (cdr expression) (enqueueAndReturn stack (car expression)))
+          ;failsafe to ensure RPN procedure has 2 elements to dequeue
+          (if (<(queue-length stack) 2)
+              #f
+              ;do rpn calculating, which also returns a boolean 
+              ;a true means that the calculation was valid
+              ;a false means the calculation returned either a negative number or fraction, which is invalid
+              (if (doRPN stack (car expression))
+                  (evaluateRPN (cdr expression) stack)
+                  #f)))))
 
-
-(define (cart li evalType [vals '()])
+;looping through the list of values, and creating the cartesian product
+;value by value from the list generatedVals, this function appends 1 value to each cartesian list
+(define (singleOneCartesian li evalType [vals '()])
   (if (null? li)
      vals
+     ;if type is 1 append a number, otherwise append an operand
      (if(equal? evalType 1)
-         (if (pair?(car li))
-             (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))(remove* (flatten (car li))generatedVals))vals))
-             (cart(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
-         
-         (cart(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
+        ;if li is a list, the already used values need to be treated differently
+        ;when its a singleValue, we can just use the remove function to remove all of the already used values
+        ;I use the getCartesianValue function to remove all of the values already used, this function also generates the cartesian products
+        ;while on single values, the cartesian products are generated in line
+         (if (pair?(flatten (car li)))
+             (singleOneCartesian(cdr li) evalType (append (getCartesianValue li vals) vals))
+             (singleOneCartesian(cdr li) evalType (append (cartesian-product (list (car li))(remove (car li) generatedVals))vals)))
+         ;value is a procedure, this means we need to generate the cartesian products with every possible operand
+         (singleOneCartesian(cdr li) evalType (append (cartesian-product (list(flatten (car li)))operands)vals))
          )
          ))
 
-
-
-(define (cartManager evalList [vals '()])
+;function that flatten removes any double values and returns the cartesian product
+;of the top of the list and all of the values not yet used 
+(define (getCartesianValue li vals)
+  (define u(flatten (car li)))
+  (define g(removeListItems u generatedVals))
+  (define n (cartesian-product (list(car li))g))
+  n
+  )
+;function that loops through a single list of 1s and -1s, and slowly generates all of the cartesian
+;product values using the singleOneCartesian function which will generate all of the 
+(define (cartesianValues evalList [vals '()])
   (define li generatedVals)
   (if (null? evalList)
-      vals
+      ;all expressions have been generated at this point
+      ;filter all expressions that dont equal the randomized total
+      ;print out the remaining values
+      (map outputExpression(filter evaluateRPN vals))
       (if (empty? vals)
-      (cartManager (cdr evalList) (append(cart li (car evalList))vals))    
-      (cartManager (cdr evalList) (append(cart vals (car evalList))vals)))))
+          ;generate the cartesians of the next 1 or -1
+      (cartesianValues (cdr (cdr evalList)) (singleOneCartesian li (car evalList))) 
+      (cartesianValues (cdr evalList) (singleOneCartesian vals (car evalList))))))
 
+;take a valid expression, and replace all of
+;the values that are procedures, with simple expression strings
+;then print out the list to the user
+(define (outputValidExpression li [stack '()])
+  (if (null? li)
+      ;output stack
+      (displayln stack)
+      (if (procedure? (car li))
+          (outputValidExpression (cdr li)(append stack (list (operandSwitch (car li)))))
+          (outputValidExpression (cdr li)(append stack (list (car li)))))))
 
+;take an expression, check if the expression is an actual expression
+;small chance that values coming in could be empty expression
+;so only output values that are actual expressions
+(define (outputExpression expression)
+   (set! expression (flatten expression))
+  (if (number? (car expression))
+      (outputValidExpression expression)
+       #f))
+      
+;take a procedure operand such as <#procedure#+>, use it as an operand with 8 and 4 as parameters
+;depending on the answer, the operand type will be revealed and a string version returnd
+(define (operandSwitch operand)
+  (define val(operand 8 4))
+  (cond
+    [(equal? val 12)'+]
+    [(equal? val 4)'-]
+    [(equal? val 32)'*]
+    [(equal? val 2)'/]))
+
+;enqueue value to stack, return stack  
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
 
+;pop two values from stack, and evaluate the operand agaist them
 (define (doRPN stack oper)
   (define a (dequeue! stack))
   (define b (dequeue! stack))
-  (define c (oper b a))
+  (define c (oper b a)) 
   (enqueue-front! stack c)
-  ;checking if the calculated value is negative or a fraction
-  (if (exact-nonnegative-integer? c)
+  ;checking if the calculated value is negative or a fraction, return true if value is valid
+  (if (and (exact-nonnegative-integer? c) (not(zero? c)))
       #t
       #f))
 
-;(define perms(list(permutations (list 1 1 1 1 1 -1 -1))))
-(define start-perm (list -1 -1 -1 1))
-
-(define l(map cartManager (map make-rpn(remove-duplicates (permutations (list -1 -1 -1 1))))))
-(define kkk(filter evaluateRPN l))
-l
-(define total (random 100 1000))
-total
-;(define qqqq(map evaluateRPN llll))
-;qqqq
+;calling the permutations function on a list of 1s and -1s
+;it then calls the remove-Duplicates function which takes out any identical lists
+;make-rpn is then called, and a -1 is added to the end, and two 1s are added to the front of evert permutation
+;every permutation
+(define storeValues(map cartesianValues (filter isValidRPN(map make-rpn(remove-duplicates (permutations (list 1 1 1 1 -1 -1 -1 -1)))))))
+(quote "Computation Complete")
