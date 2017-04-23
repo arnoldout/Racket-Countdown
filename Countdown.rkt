@@ -76,10 +76,12 @@ generatedVals
           ;do rpn calculating, which also returns a boolean 
           ;a true means that the calculation was valid
           ;a false means the calculation returned either a negative number or fraction, which is invalid
+          (if (<(queue-length stack) 2)
+              #f
           (if
            (doRPN stack (car expression))
               (evaluateRPN (cdr expression) stack)
-              #f))))
+              #f)))))
 
 
 (define (singleOneCartesian li evalType [vals '()])
@@ -105,18 +107,23 @@ generatedVals
 (define (cartesianValues evalList [vals '()])
   (define li generatedVals)
   (if (null? evalList)
-      (map outputValidExpression(filter evaluateRPN vals))
+      (map outputExpression(filter evaluateRPN vals))
       (if (empty? vals)
       (cartesianValues (cdr (cdr evalList)) (singleOneCartesian li (car evalList))) 
       (cartesianValues (cdr evalList) (singleOneCartesian vals (car evalList))))))
 
 (define (outputValidExpression li [stack '()])
-  (set! li (flatten li))
   (if (null? li)
       (displayln stack)
       (if (procedure? (car li))
           (outputValidExpression (cdr li)(append stack (list (operandSwitch (car li)))))
           (outputValidExpression (cdr li)(append stack (list (car li)))))))
+(define (outputExpression expression)
+   (set! expression (flatten expression))
+  (if (number? (car expression))
+      (outputValidExpression expression)
+       #f))
+      
 
 (define (operandSwitch operand)
   (define val(operand 8 4))
@@ -146,8 +153,5 @@ generatedVals
 ;it then calls the remove-Duplicates function which takes out any identical lists
 ;make-rpn is then called, and a -1 is added to the end, and two 1s are added to the front of evert permutation
 ;every permutation
-
-;;;;you missed a step somewhere, the lists are checked for valid rpns, could speed up a bit
-(map cartesianValues (filter isValidRPN(map make-rpn(remove-duplicates (permutations (list 1 1 1 1 -1 -1 -1 -1))))))
-
-(quote 2)
+(define storeValues(map cartesianValues (filter isValidRPN(map make-rpn(remove-duplicates (permutations (list 1 1 1 1 -1 -1 -1 -1)))))))
+(quote "Computation Complete")
