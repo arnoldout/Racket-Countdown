@@ -145,7 +145,7 @@ generatedVals
       (outputValidExpression expression)
        #f))
       
-;take a procedure operand such as <#procedure#+> use it as an operand with 8 and 4 as parameters
+;take a procedure operand such as <#procedure#+>, use it as an operand with 8 and 4 as parameters
 ;depending on the answer, the operand type will be revealed and a string version returnd
 (define (operandSwitch operand)
   (define val(operand 8 4))
@@ -155,18 +155,18 @@ generatedVals
     [(equal? val 32)'*]
     [(equal? val 2)'/]))
 
-
-  
+;enqueue value to stack, return stack  
 (define (enqueueAndReturn stack value)
   (enqueue-front! stack value)
   stack)
 
+;pop two values from stack, and evaluate the operand agaist them
 (define (doRPN stack oper)
   (define a (dequeue! stack))
   (define b (dequeue! stack))
   (define c (oper b a)) 
   (enqueue-front! stack c)
-  ;checking if the calculated value is negative or a fraction
+  ;checking if the calculated value is negative or a fraction, return true if value is valid
   (if (and (exact-nonnegative-integer? c) (not(zero? c)))
       #t
       #f))
